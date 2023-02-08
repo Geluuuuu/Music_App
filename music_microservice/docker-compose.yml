@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  db_user:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=music_db
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d/
+    ports:
+      - '5432:5432'

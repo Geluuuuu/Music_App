@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db_user:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=user_db
+    volumes:
+      - ./db_init_scripts/user:/docker-entrypoint-initdb.d/
+    ports:
+      - '10000:5432'
+
+  db_music:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=music_db
+    volumes:
+      - ./db_init_scripts/music:/docker-entrypoint-initdb.d/
+    ports:
+      - '10001:5432'
+
+  server_music:
+    image: music_microservice
+    ports:
+      - '10002:8080'
+    depends_on:
+      - db_music
+  
+  db_playlist:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: gelu
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    ports:
+      - "10003:27017"
+
+  server_playlist:
+    image: playlist_microservice
+    ports:
+      - '10004:8080'
+    depends_on:
+      - db_playlist
